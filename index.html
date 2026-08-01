@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>在线智能客服系统</title>
+    <title>家电维修智能客服</title>
     <style>
         * {
             margin: 0;
@@ -182,22 +182,22 @@
             <div class="header-left">
                 <div class="robot-avatar">AI</div>
                 <div>
-                    <div style="font-weight:500">企业智能客服</div>
-                    <div style="font-size:12px;opacity:0.8">在线值守中</div>
+                    <div style="font-weight:500">家电维修智能客服</div>
+                    <div style="font-size:12px;opacity:0.8">福州长乐在线服务</div>
                 </div>
             </div>
             <div class="close-chat" id="closeBtn">×</div>
         </div>
         <div class="chat-body" id="chatBox">
             <div class="msg-row robot-box">
-                <div class="msg-content">您好，欢迎咨询本店客服~ 请问需要咨询什么问题？</div>
+                <div class="msg-content">您好，欢迎咨询家电维修清洗服务~可咨询空调洗衣机清洗、电脑打印机维修、上门报价等问题</div>
             </div>
         </div>
         <div class="quick-bar">
-            <div class="quick-tag" onclick="sendQuick('营业时间')">营业时间</div>
-            <div class="quick-tag" onclick="sendQuick('订单查询')">订单查询</div>
-            <div class="quick-tag" onclick="sendQuick('售后退换')">售后退换</div>
-            <div class="quick-tag" onclick="sendQuick('人工客服')">转接人工</div>
+            <div class="quick-tag" onclick="sendQuick('上门清洗空调价格')">空调清洗报价</div>
+            <div class="quick-tag" onclick="sendQuick('洗衣机清洗费用')">洗衣机清洗</div>
+            <div class="quick-tag" onclick="sendQuick('电脑打印机维修')">电脑打印机维修</div>
+            <div class="quick-tag" onclick="sendQuick('上门服务时间')">上门营业时间</div>
         </div>
         <div class="chat-footer">
             <input type="text" id="inputText" placeholder="输入问题回车发送">
@@ -216,15 +216,15 @@
     openBtn.onclick = () => chatWin.style.display = 'flex';
     closeBtn.onclick = () => chatWin.style.display = 'none';
 
-    // 问答知识库（可自行扩充）
+    // 问答知识库（家电维修业务专属）
     const qaData = {
-        "营业时间": "本店日常营业时间：周一至周日 9:00-22:00，节假日正常上班",
-        "订单查询": "请发送您的订单编号，我将为您查询物流与订单状态",
-        "售后退换": "签收7天内商品完好可无理由退换；质量问题来回运费商家承担",
-        "人工客服": "正在排队转接人工客服，请稍作等待~",
-        "你好": "您好😊 很高兴为您服务",
-        "谢谢": "不客气，祝您生活愉快",
-        "再见": "再见，期待您下次光临！"
+        "上门清洗空调价格": "挂机空调清洗80元/台，柜机120元/台，包含拆机深度去污、除菌消毒，福州长乐全区可上门",
+        "洗衣机清洗费用": "波轮洗衣机70元，滚筒洗衣机90元，全拆内筒清洗，去除污垢霉菌",
+        "电脑打印机维修": "电脑重装系统、卡顿维修、打印机卡纸/缺墨故障均可上门检修，先检测后收费",
+        "上门服务时间": "每日8:30-21:00均可预约上门，周末节假日正常接单",
+        "你好": "您好😊，长乐本地家电维保师傅，很高兴为您解答",
+        "谢谢": "不客气，需要预约上门随时和我说~",
+        "再见": "再见，有家电清洗维修需求欢迎随时咨询！"
     };
 
     // 快捷提问
@@ -249,9 +249,8 @@
         addMessage(val, true);
         input.value = "";
 
-        // 模拟机器人思考延迟
         setTimeout(() => {
-            let reply = qaData[val] || "不好意思，未能理解您的问题，您可以点击上方快捷问题，或者换个方式提问~";
+            let reply = qaData[val] || "不好意思，没能理解您的问题，您可以点击上方快捷服务，或者告诉我您需要清洗/维修的家电~";
             addMessage(reply, false);
         }, 700);
     }
