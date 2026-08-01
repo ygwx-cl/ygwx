@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>在线智能客服系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, Microsoft YaHei, sans-serif;
+        }
+        body {
+            background: #f4f7f9;
+        }
+        /* 右下角悬浮客服按钮 */
+        .float-service-btn {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #1677ff;
+            box-shadow: 0 4px 15px rgba(22, 119, 255, 0.35);
+            color: #fff;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 9999;
+            transition: all 0.25s ease;
+        }
+        .float-service-btn:hover {
+            transform: scale(1.08);
+        }
+        /* 聊天弹窗容器 */
+        .chat-window {
+            position: fixed;
+            right: 30px;
+            bottom: 95px;
+            width: 420px;
+            height: 620px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+            overflow: hidden;
+            z-index: 9998;
+            display: none;
+            flex-direction: column;
+        }
+        /* 头部 */
+        .chat-header {
+            background: #1677ff;
+            color: white;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .robot-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fff;
+            color: #1677ff;
+            display: grid;
+            place-items: center;
+            font-weight: bold;
+        }
+        .close-chat {
+            cursor: pointer;
+            font-size: 20px;
+        }
+        /* 聊天内容区 */
+        .chat-body {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #fafbfc;
+        }
+        .msg-row {
+            margin-bottom: 16px;
+            display: flex;
+        }
+        .robot-box {
+            justify-content: flex-start;
+        }
+        .user-box {
+            justify-content: flex-end;
+        }
+        .msg-content {
+            padding: 9px 14px;
+            max-width: 72%;
+            line-height: 1.65;
+            font-size: 14px;
+            border-radius: 12px;
+        }
+        .robot-box .msg-content {
+            background: #e8edf3;
+            border-bottom-left-radius: 4px;
+            color: #222;
+        }
+        .user-box .msg-content {
+            background: #1677ff;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        /* 快捷问题栏 */
+        .quick-bar {
+            padding: 10px 16px;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .quick-tag {
+            border: 1px solid #1677ff;
+            color: #1677ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .quick-tag:hover {
+            background: #1677ff;
+            color: #fff;
+        }
+        /* 底部输入区 */
+        .chat-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 8px;
+        }
+        #inputText {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            padding: 10px 16px;
+            outline: none;
+            font-size: 14px;
+        }
+        #sendBtn {
+            padding: 0 18px;
+            border: none;
+            border-radius: 24px;
+            background: #1677ff;
+            color: white;
+            cursor: pointer;
+        }
+        /* 移动端适配 */
+        @media (max-width: 480px) {
+            .chat-window {
+                width: calc(100% - 20px);
+                height: 85vh;
+                right: 10px;
+                bottom: 80px;
+            }
+            .float-service-btn {
+                right: 15px;
+                bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 悬浮客服按钮 -->
+    <div class="float-service-btn" id="openChatBtn">💬</div>
+
+    <!-- 聊天弹窗 -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div class="header-left">
+                <div class="robot-avatar">AI</div>
+                <div>
+                    <div style="font-weight:500">企业智能客服</div>
+                    <div style="font-size:12px;opacity:0.8">在线值守中</div>
+                </div>
+            </div>
+            <div class="close-chat" id="closeBtn">×</div>
+        </div>
+        <div class="chat-body" id="chatBox">
+            <div class="msg-row robot-box">
+                <div class="msg-content">您好，欢迎咨询本店客服~ 请问需要咨询什么问题？</div>
+            </div>
+        </div>
+        <div class="quick-bar">
+            <div class="quick-tag" onclick="sendQuick('营业时间')">营业时间</div>
+            <div class="quick-tag" onclick="sendQuick('订单查询')">订单查询</div>
+            <div class="quick-tag" onclick="sendQuick('售后退换')">售后退换</div>
+            <div class="quick-tag" onclick="sendQuick('人工客服')">转接人工</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="inputText" placeholder="输入问题回车发送">
+            <button id="sendBtn" onclick="submitMsg()">发送</button>
+        </div>
+    </div>
+
+<script>
+    // 开关弹窗
+    const openBtn = document.getElementById('openChatBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const chatWin = document.getElementById('chatWindow');
+    const chatBox = document.getElementById('chatBox');
+    const input = document.getElementById('inputText');
+
+    openBtn.onclick = () => chatWin.style.display = 'flex';
+    closeBtn.onclick = () => chatWin.style.display = 'none';
+
+    // 问答知识库（可自行扩充）
+    const qaData = {
+        "营业时间": "本店日常营业时间：周一至周日 9:00-22:00，节假日正常上班",
+        "订单查询": "请发送您的订单编号，我将为您查询物流与订单状态",
+        "售后退换": "签收7天内商品完好可无理由退换；质量问题来回运费商家承担",
+        "人工客服": "正在排队转接人工客服，请稍作等待~",
+        "你好": "您好😊 很高兴为您服务",
+        "谢谢": "不客气，祝您生活愉快",
+        "再见": "再见，期待您下次光临！"
+    };
+
+    // 快捷提问
+    function sendQuick(txt) {
+        input.value = txt;
+        submitMsg();
+    }
+
+    // 追加消息DOM
+    function addMessage(text, isUser) {
+        const div = document.createElement('div');
+        div.className = `msg-row ${isUser ? 'user-box' : 'robot-box'}`;
+        div.innerHTML = `<div class="msg-content">${text}</div>`;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // 发送消息逻辑
+    function submitMsg() {
+        let val = input.value.trim();
+        if (!val) return;
+        addMessage(val, true);
+        input.value = "";
+
+        // 模拟机器人思考延迟
+        setTimeout(() => {
+            let reply = qaData[val] || "不好意思，未能理解您的问题，您可以点击上方快捷问题，或者换个方式提问~";
+            addMessage(reply, false);
+        }, 700);
+    }
+
+    // 回车发送
+    input.addEventListener('keydown', e => {
+        if(e.key === 'Enter') submitMsg();
+    })
+</script>
+</body>
+</html>
